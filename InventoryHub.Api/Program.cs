@@ -1,16 +1,24 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using InventoryHub.Api.Data;
+using InventoryHub.Api.Features.Products;
+using Microsoft.EntityFrameworkCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is missing.");
+
+builder.Services.AddDbContext<InventoryHubContext>(options =>
+    options.UseSqlite(connectionString));
+
+var frontEndUrl = builder.Configuration["FrontEndUrl"]
+    ?? throw new InvalidOperationException("FrontEndUrl configuration is missing.");
 
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
-    {
-        var frontEndUrls = builder.Configuration.GetSection("FrontEndUrl")
-                                                .Get<string[]>() ??
-                                                throw new InvalidOperationException("FrontEndUrl configuration is missing.");
-        policy.WithOrigins(frontEndUrls)
+        policy.WithOrigins(frontEndUrl)
               .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
+              .AllowAnyMethod());
 });
 
 var app = builder.Build();
@@ -18,5 +26,7 @@ var app = builder.Build();
 app.UseCors();
 
 app.UseHttpsRedirection();
+
+app.MapProductsEndpoints();
 
 app.Run();
