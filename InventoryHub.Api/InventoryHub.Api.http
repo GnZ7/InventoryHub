@@ -1,6 +1,9 @@
-@InventoryHub.Api_HostAddress = http://localhost:5062
+﻿# Edit the host address as needed for your local development environment
+@InventoryHub.Api_HostAddress = https://localhost:7276
 
-GET {{InventoryHub.Api_HostAddress}}/weatherforecast/
+
+### GetProducts - returns a list of all products (Id, Name, Price, Stock)
+GET {{InventoryHub.Api_HostAddress}}/products
 Accept: application/json
 
 ###

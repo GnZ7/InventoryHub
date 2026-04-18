@@ -23,6 +23,12 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<InventoryHubContext>();
+    await DbSeeder.SeedAsync(db);
+}
+
 app.UseCors();
 
 app.UseHttpsRedirection();
