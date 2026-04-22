@@ -10,11 +10,18 @@ public static class GetProductsEndpoint
         app.MapGet("/", async (InventoryHubContext dbContext) =>
         {
             return await dbContext.Products
-                 .Select(product => new ProductDto(product.Id, product.Name, product.Price, product.Stock))
-                 .AsNoTracking()
-                 .ToListAsync();
+                .Include(product => product.Category)
+                .Select(product => new ProductDto(
+                    product.Id,
+                    product.Name,
+                    product.Price,
+                    product.Stock,
+                    product.Category == null ? null : new CategoryDto(product.Category.Id, product.Category.Name)))                
+                .AsNoTracking()
+                .ToListAsync();
         }).Produces<List<ProductDto>>();
     }
 
-    public record ProductDto(Guid Id, string Name, decimal Price, int Stock);
+    public record CategoryDto(int Id, string Name);
+    public record ProductDto(Guid Id, string Name, decimal Price, int Stock, CategoryDto? Category);
 }

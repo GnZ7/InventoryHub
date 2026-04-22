@@ -24,6 +24,12 @@ namespace InventoryHub.Api.Data.EntityConfigurations
 
             builder.Property(product => product.Stock)
                 .HasDefaultValue(0);
+
+            builder.HasOne(product => product.Category)
+                .WithMany()
+                .HasForeignKey("CategoryId")
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
